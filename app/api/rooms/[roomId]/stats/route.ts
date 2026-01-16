@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase/client'
+import { createClient } from '@supabase/supabase-js'
 
 export async function GET(
   request: NextRequest,
@@ -8,8 +8,14 @@ export async function GET(
   try {
     const { roomId } = params
 
+    // Create a fresh Supabase client
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+
     const { data, error } = await supabase
-      .rpc('get_room_stats', { room_uuid: roomId })
+      .rpc('get_room_stats', { room_uuid: roomId } as any)
 
     if (error) throw error
 

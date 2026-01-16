@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase/client'
+import { createClient } from '@supabase/supabase-js'
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,9 +12,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Create a fresh Supabase client for this API route
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+
     // Call the atomic function to get a random code
     const { data, error } = await supabase
-      .rpc('get_random_code', { room_uuid: roomId })
+      .rpc('get_random_code', { room_uuid: roomId } as any)
 
     if (error) throw error
 
@@ -31,7 +37,7 @@ export async function POST(request: NextRequest) {
     if (userId && codeData.code_id) {
       await supabase
         .from('codes')
-        .update({ assigned_to: userId })
+        .update({ assigned_to: userId } as any)
         .eq('id', codeData.code_id)
     }
 

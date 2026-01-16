@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase/client'
+import { createClient } from '@supabase/supabase-js'
 
 // Create a new room
 export async function POST(request: NextRequest) {
@@ -13,10 +13,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Create a fresh Supabase client
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+
     // Create the room
     const { data: room, error: roomError } = await supabase
       .from('rooms')
-      .insert({ name, active: true })
+      .insert({ name, active: true } as any)
       .select()
       .single()
 
@@ -32,7 +38,7 @@ export async function POST(request: NextRequest) {
 
     // Seed the room with all 10,000 codes
     const { data: seedResult, error: seedError } = await supabase
-      .rpc('seed_room_codes', { room_uuid: room.id })
+      .rpc('seed_room_codes', { room_uuid: room.id } as any)
 
     if (seedError) {
       console.error('Error seeding codes:', seedError)
@@ -64,6 +70,12 @@ export async function GET(request: NextRequest) {
         { status: 400 }
       )
     }
+
+    // Create a fresh Supabase client
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
 
     const { data: room, error } = await supabase
       .from('rooms')
