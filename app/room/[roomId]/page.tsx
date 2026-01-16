@@ -818,7 +818,7 @@ export default function RoomPage() {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
-            className="fixed bottom-24 sm:bottom-32 left-1/2 md:left-[calc(50%+2rem)] lg:left-[calc(50%-10rem)] -translate-x-1/2 z-50"
+            className="fixed bottom-24 sm:bottom-32 left-1/2 md:left-[calc(50%+1.5rem)] lg:left-[calc(50%-11rem)] -translate-x-1/2 z-50"
           >
             <div className="bg-zinc-900/95 backdrop-blur-xl border border-vivid-rose/30 rounded-2xl px-6 py-4 shadow-2xl shadow-vivid-rose/20 flex items-center gap-4">
               <div className="flex items-center gap-3">
