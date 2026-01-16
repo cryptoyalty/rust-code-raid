@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
+// Disable caching for this route
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { roomId: string } }
@@ -34,7 +38,13 @@ export async function GET(
       success_codes: codes?.filter((c: any) => c.status === 'success').length || 0,
     }
 
-    return NextResponse.json({ stats })
+    return NextResponse.json({ stats }, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+      }
+    })
   } catch (error) {
     console.error('Error fetching room stats:', error)
     return NextResponse.json(
