@@ -47,6 +47,9 @@ export default function RoomPage() {
   const [winningCodeId, setWinningCodeId] = useState<string | null>(null)
   const [error, setError] = useState('')
   const [codeKey, setCodeKey] = useState(0)
+  const [showUndoToast, setShowUndoToast] = useState(false)
+  const [lastFailedCode, setLastFailedCode] = useState<{ id: string; value: string } | null>(null)
+  const undoTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Confetti effect
   const fireConfetti = () => {
@@ -270,6 +273,9 @@ export default function RoomPage() {
     triggerFlash('red')
     
     try {
+      // Save the code we're about to mark as failed (for undo)
+      setLastFailedCode(codeToMark)
+      
       // Mark as failed FIRST before fetching next code
       const response = await fetch(`/api/codes/${codeToMark.id}`, {
         method: 'PATCH',
@@ -286,6 +292,20 @@ export default function RoomPage() {
       
       // Now fetch next code
       await fetchNextCode()
+      
+      // Show undo toast
+      setShowUndoToast(true)
+      
+      // Clear any existing timeout
+      if (undoTimeoutRef.current) {
+        clearTimeout(undoTimeoutRef.current)
+      }
+      
+      // Auto-hide toast after 5 seconds
+      undoTimeoutRef.current = setTimeout(() => {
+        setShowUndoToast(false)
+        setLastFailedCode(null)
+      }, 5000)
     } catch (err) {
       console.error('Error marking code as failed:', err)
     } finally {
@@ -342,6 +362,35 @@ export default function RoomPage() {
       fetchNextCode()
     } catch (err) {
       console.error('Error undoing code:', err)
+    }
+  }
+
+  // Undo incorrect code
+  const handleUndoIncorrect = async () => {
+    if (!lastFailedCode) return
+
+    try {
+      // Clear the timeout
+      if (undoTimeoutRef.current) {
+        clearTimeout(undoTimeoutRef.current)
+      }
+
+      // Mark code back to pending
+      await fetch(`/api/codes/${lastFailedCode.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'pending' }),
+      })
+
+      // Restore the code as current
+      setCurrentCode(lastFailedCode)
+      setCodeKey(prev => prev + 1)
+      
+      // Hide toast and clear failed code
+      setShowUndoToast(false)
+      setLastFailedCode(null)
+    } catch (err) {
+      console.error('Error undoing incorrect code:', err)
     }
   }
 
@@ -708,6 +757,38 @@ export default function RoomPage() {
                   Next Target
                 </button>
               </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Undo Toast for Incorrect Codes */}
+      <AnimatePresence>
+        {showUndoToast && lastFailedCode && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50"
+          >
+            <div className="bg-zinc-900/95 backdrop-blur-xl border border-vivid-rose/30 rounded-2xl px-6 py-4 shadow-2xl shadow-vivid-rose/20 flex items-center gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-vivid-rose/20 flex items-center justify-center">
+                  <X className="w-5 h-5 text-vivid-rose" />
+                </div>
+                <div>
+                  <p className="text-sm text-zinc-400">Marked as incorrect</p>
+                  <p className="text-lg font-bold text-white font-mono">{lastFailedCode.value}</p>
+                </div>
+              </div>
+              
+              <button
+                onClick={handleUndoIncorrect}
+                className="ml-4 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg text-white text-sm font-semibold flex items-center gap-2 transition-all"
+              >
+                <Undo2 className="w-4 h-4" />
+                Undo
+              </button>
             </div>
           </motion.div>
         )}
