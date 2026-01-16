@@ -131,7 +131,7 @@ export default function RoomPage() {
           .limit(10)
 
         if (!error && failedCodes) {
-          setRecentFails(failedCodes.map(c => c.code))
+          setRecentFails(failedCodes.map((c: any) => c.code))
         }
       } catch (err) {
         console.error('Error loading initial data:', err)
