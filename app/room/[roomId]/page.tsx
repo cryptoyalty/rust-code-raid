@@ -119,7 +119,7 @@ export default function RoomPage() {
         // Reset any stuck "testing" codes back to "pending" when page loads
         await supabase
           .from('codes')
-          .update({ status: 'pending' })
+          .update({ status: 'pending' } as any)
           .eq('room_id', roomId)
           .eq('status', 'testing')
         
