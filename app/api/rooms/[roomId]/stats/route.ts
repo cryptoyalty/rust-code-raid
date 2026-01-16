@@ -14,27 +14,25 @@ export async function GET(
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     )
 
-    const { data, error } = await supabase
-      .rpc('get_room_stats', { room_uuid: roomId } as any)
-
-    console.log('Stats RPC call - roomId:', roomId)
-    console.log('Stats RPC call - data:', data)
-    console.log('Stats RPC call - error:', error)
+    // Query codes directly instead of using RPC function
+    const { data: codes, error } = await (supabase as any)
+      .from('codes')
+      .select('status')
+      .eq('room_id', roomId)
 
     if (error) {
-      console.error('Stats RPC error:', error)
+      console.error('Stats query error:', error)
       throw error
     }
 
-    const stats = data?.[0] || {
-      total_codes: 0,
-      pending_codes: 0,
-      testing_codes: 0,
-      failed_codes: 0,
-      success_codes: 0,
+    // Calculate stats from the codes array
+    const stats = {
+      total_codes: codes?.length || 0,
+      pending_codes: codes?.filter((c: any) => c.status === 'pending').length || 0,
+      testing_codes: codes?.filter((c: any) => c.status === 'testing').length || 0,
+      failed_codes: codes?.filter((c: any) => c.status === 'failed').length || 0,
+      success_codes: codes?.filter((c: any) => c.status === 'success').length || 0,
     }
-
-    console.log('Returning stats:', stats)
 
     return NextResponse.json({ stats })
   } catch (error) {
