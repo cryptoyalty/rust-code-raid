@@ -19,7 +19,10 @@ export async function PATCH(
 
     const { data, error } = await supabase
       .from('codes')
-      .update({ status, updated_at: new Date().toISOString() })
+      .update({ 
+        status: status as string,
+        updated_at: new Date().toISOString() 
+      })
       .eq('id', codeId)
       .select()
       .single()
