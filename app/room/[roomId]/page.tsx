@@ -301,11 +301,11 @@ export default function RoomPage() {
         clearTimeout(undoTimeoutRef.current)
       }
       
-      // Auto-hide toast after 5 seconds
+      // Auto-hide toast after 15 seconds
       undoTimeoutRef.current = setTimeout(() => {
         setShowUndoToast(false)
         setLastFailedCode(null)
-      }, 5000)
+      }, 15000)
     } catch (err) {
       console.error('Error marking code as failed:', err)
     } finally {
@@ -766,10 +766,10 @@ export default function RoomPage() {
       <AnimatePresence>
         {showUndoToast && lastFailedCode && (
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 50 }}
-            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50"
+            exit={{ opacity: 0, y: 20 }}
+            className="fixed top-1/2 left-1/2 -translate-x-1/2 translate-y-[280px] z-50"
           >
             <div className="bg-zinc-900/95 backdrop-blur-xl border border-vivid-rose/30 rounded-2xl px-6 py-4 shadow-2xl shadow-vivid-rose/20 flex items-center gap-4">
               <div className="flex items-center gap-3">
