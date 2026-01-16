@@ -233,7 +233,7 @@ export default function HomePage() {
                   </svg>
                 </div>
                 <h3 className="text-lg font-bold text-white mb-2">Atomic Code Distribution</h3>
-                <p className="text-sm text-zinc-400 leading-relaxed">No duplicate codes across raiders. Database-level locking ensures fairness.</p>
+                <p className="text-sm text-zinc-400 leading-relaxed">No duplicate codes across raiders. Database-level locking ensures unique codes for every attempt.</p>
               </div>
 
               {/* Feature 2 */}
@@ -244,7 +244,7 @@ export default function HomePage() {
                   </svg>
                 </div>
                 <h3 className="text-lg font-bold text-white mb-2">Weighted Code Selection</h3>
-                <p className="text-sm text-zinc-400 leading-relaxed">Prioritizes most common codes. Top 1000 codes are 15x more likely.</p>
+                <p className="text-sm text-zinc-400 leading-relaxed">Prioritizes most common codes. Top codes used are weighted in the random code algorithm.</p>
               </div>
 
               {/* Feature 3 */}
@@ -255,7 +255,7 @@ export default function HomePage() {
                   </svg>
                 </div>
                 <h3 className="text-lg font-bold text-white mb-2">Real-Time Sync</h3>
-                <p className="text-sm text-zinc-400 leading-relaxed">Live progress updates. See your team's attempts instantly.</p>
+                <p className="text-sm text-zinc-400 leading-relaxed">Track all codes entered in real-time.</p>
               </div>
 
               {/* Feature 4 */}
@@ -266,7 +266,7 @@ export default function HomePage() {
                   </svg>
                 </div>
                 <h3 className="text-lg font-bold text-white mb-2">Unlimited Raiders</h3>
-                <p className="text-sm text-zinc-400 leading-relaxed">No team size limits. Perfect for large groups.</p>
+                <p className="text-sm text-zinc-400 leading-relaxed">No code raiding member limits. Perfect for large groups.</p>
               </div>
 
               {/* Feature 5 */}
@@ -288,7 +288,7 @@ export default function HomePage() {
                   </svg>
                 </div>
                 <h3 className="text-lg font-bold text-white mb-2">Keyboard Shortcuts</h3>
-                <p className="text-sm text-zinc-400 leading-relaxed">X for incorrect, Enter for correct. Lightning-fast raiding.</p>
+                <p className="text-sm text-zinc-400 leading-relaxed">X for incorrect, Enter for correct.</p>
               </div>
             </div>
           </motion.div>
