@@ -277,7 +277,7 @@ export default function HomePage() {
                   </svg>
                 </div>
                 <h3 className="text-lg font-bold text-white mb-2">Live Activity Feed</h3>
-                <p className="text-sm text-zinc-400 leading-relaxed">Track failed codes in real-time. Never test the same code twice.</p>
+                <p className="text-sm text-zinc-400 leading-relaxed">Track failed codes in real-time across all members. Once a code is marked correct all raiders are notified.</p>
               </div>
 
               {/* Feature 6 */}
