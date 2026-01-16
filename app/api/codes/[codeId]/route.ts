@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase/client'
-import type { Database } from '@/lib/supabase/types'
-
-type CodeUpdate = Database['public']['Tables']['codes']['Update']
+import { createClient } from '@supabase/supabase-js'
 
 export async function PATCH(
   request: NextRequest,
@@ -20,14 +17,18 @@ export async function PATCH(
       )
     }
 
-    const updateData: CodeUpdate = { 
-      status: status as 'pending' | 'testing' | 'success' | 'failed',
-      updated_at: new Date().toISOString() 
-    }
-    
+    // Create a fresh Supabase client for this API route
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+
     const { data, error } = await supabase
       .from('codes')
-      .update(updateData)
+      .update({ 
+        status,
+        updated_at: new Date().toISOString() 
+      } as any)
       .eq('id', codeId)
       .select()
       .single()
