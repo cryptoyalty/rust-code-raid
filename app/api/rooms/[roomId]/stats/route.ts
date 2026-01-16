@@ -17,7 +17,14 @@ export async function GET(
     const { data, error } = await supabase
       .rpc('get_room_stats', { room_uuid: roomId } as any)
 
-    if (error) throw error
+    console.log('Stats RPC call - roomId:', roomId)
+    console.log('Stats RPC call - data:', data)
+    console.log('Stats RPC call - error:', error)
+
+    if (error) {
+      console.error('Stats RPC error:', error)
+      throw error
+    }
 
     const stats = data?.[0] || {
       total_codes: 0,
@@ -26,6 +33,8 @@ export async function GET(
       failed_codes: 0,
       success_codes: 0,
     }
+
+    console.log('Returning stats:', stats)
 
     return NextResponse.json({ stats })
   } catch (error) {
