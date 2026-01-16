@@ -462,7 +462,7 @@ export default function RoomPage() {
 
   // Calculate progress
   const testedCodes = stats.failed_codes + stats.success_codes
-  const progressPercent = (testedCodes / stats.total_codes) * 100
+  const progressPercent = stats.total_codes > 0 ? (testedCodes / stats.total_codes) * 100 : 0
 
   if (!room) {
     return (
@@ -527,6 +527,7 @@ export default function RoomPage() {
             </div>
             <div className="w-full h-1.5 bg-zinc-900 rounded-full overflow-hidden">
               <motion.div
+                key={`progress-${testedCodes}`}
                 className="h-full bg-gradient-to-r from-electric-emerald to-emerald-400"
                 initial={{ width: 0 }}
                 animate={{ width: `${progressPercent}%` }}
@@ -534,7 +535,7 @@ export default function RoomPage() {
               />
             </div>
             <div className="mt-2 text-xs text-zinc-600">
-              {testedCodes.toLocaleString()} / {stats.total_codes.toLocaleString()} tested
+              {testedCodes.toLocaleString()} / {stats.total_codes.toLocaleString()} Codes
             </div>
           </div>
 
@@ -665,7 +666,7 @@ export default function RoomPage() {
                     <span className="text-white font-bold">{progressPercent.toFixed(1)}%</span>
                   </div>
                   <div className="w-full h-2 bg-black/40 rounded-full overflow-hidden">
-                    <div className="h-full bg-gradient-to-r from-cyan-500 to-cyan-400" style={{ width: `${progressPercent}%` }} />
+                    <div key={`mobile-progress-${testedCodes}`} className="h-full bg-gradient-to-r from-cyan-500 to-cyan-400" style={{ width: `${progressPercent}%` }} />
                   </div>
                 </div>
                 
