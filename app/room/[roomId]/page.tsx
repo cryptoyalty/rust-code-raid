@@ -114,11 +114,32 @@ export default function RoomPage() {
   useEffect(() => {
     const loadInitialData = async () => {
       try {
+        console.log('Loading initial data for room:', roomId)
+        
+        // Reset any stuck "testing" codes back to "pending" when page loads
+        await supabase
+          .from('codes')
+          .update({ status: 'pending' })
+          .eq('room_id', roomId)
+          .eq('status', 'testing')
+        
         // Load initial stats
         const statsResponse = await fetch(`/api/rooms/${roomId}/stats`)
-        const statsData = await statsResponse.json()
-        if (statsData.stats) {
-          setStats(statsData.stats)
+        console.log('Stats response status:', statsResponse.status)
+        
+        if (!statsResponse.ok) {
+          const errorText = await statsResponse.text()
+          console.error('Stats API error:', errorText)
+        } else {
+          const statsData = await statsResponse.json()
+          console.log('Raw stats data:', statsData)
+          
+          if (statsData.stats) {
+            console.log('Setting stats to:', statsData.stats)
+            setStats(statsData.stats)
+          } else {
+            console.error('No stats in response')
+          }
         }
 
         // Load recent failed codes
@@ -131,7 +152,10 @@ export default function RoomPage() {
           .limit(10)
 
         if (!error && failedCodes) {
+          console.log('Loaded recent fails:', failedCodes.length, failedCodes)
           setRecentFails(failedCodes.map((c: any) => c.code))
+        } else if (error) {
+          console.error('Error loading failed codes:', error)
         }
       } catch (err) {
         console.error('Error loading initial data:', err)
