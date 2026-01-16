@@ -19,10 +19,12 @@ export async function GET(
     )
 
     // Query codes directly instead of using RPC function
+    // Supabase defaults to 1000 row limit, so we need to specify a higher limit
     const { data: codes, error } = await (supabase as any)
       .from('codes')
       .select('status')
       .eq('room_id', roomId)
+      .limit(10000)
 
     if (error) {
       console.error('Stats query error:', error)
