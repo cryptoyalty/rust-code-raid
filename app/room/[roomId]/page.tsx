@@ -465,7 +465,7 @@ export default function RoomPage() {
                   <ArrowLeft className="w-5 h-5" />
                 </button>
                 <h1 className="text-sm font-black tracking-tight bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-gradient bg-300">
-                  RUST CODE RAID
+                  RAID.CODES
                 </h1>
                 <div className="flex items-center gap-2 text-xs text-zinc-500">
                   <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />

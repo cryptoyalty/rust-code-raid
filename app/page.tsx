@@ -80,7 +80,7 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <h1 className="text-2xl font-black tracking-tight bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-gradient bg-300">
-                RUST CODE RAID
+                RAID.CODES
               </h1>
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
