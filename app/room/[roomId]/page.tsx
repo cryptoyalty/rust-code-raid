@@ -112,22 +112,14 @@ export default function RoomPage() {
 
   // Load initial stats and recent failed codes
   useEffect(() => {
-    const loadStats = async () => {
+    const loadInitialData = async () => {
       try {
+        // Load initial stats
         const statsResponse = await fetch(`/api/rooms/${roomId}/stats`)
         const statsData = await statsResponse.json()
         if (statsData.stats) {
           setStats(statsData.stats)
         }
-      } catch (err) {
-        console.error('Error loading stats:', err)
-      }
-    }
-
-    const loadInitialData = async () => {
-      try {
-        // Load initial stats
-        await loadStats()
 
         // Load recent failed codes
         const { data: failedCodes, error } = await supabase
@@ -147,11 +139,6 @@ export default function RoomPage() {
     }
 
     loadInitialData()
-
-    // Periodically refresh stats from server to ensure accuracy
-    const statsInterval = setInterval(loadStats, 3000) // Refresh every 3 seconds
-
-    return () => clearInterval(statsInterval)
   }, [roomId])
 
   // Real-time subscription
@@ -806,7 +793,7 @@ export default function RoomPage() {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
-            className="fixed bottom-24 sm:bottom-32 left-1/2 md:left-[calc(50%+2.5rem)] lg:left-[calc(50%-9rem)] -translate-x-1/2 z-50"
+            className="fixed bottom-24 sm:bottom-32 left-1/2 md:left-[calc(50%+2rem)] lg:left-[calc(50%-10rem)] -translate-x-1/2 z-50"
           >
             <div className="bg-zinc-900/95 backdrop-blur-xl border border-vivid-rose/30 rounded-2xl px-6 py-4 shadow-2xl shadow-vivid-rose/20 flex items-center gap-4">
               <div className="flex items-center gap-3">
