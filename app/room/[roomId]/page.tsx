@@ -116,12 +116,13 @@ export default function RoomPage() {
       try {
         console.log('Loading initial data for room:', roomId)
         
+        // TEMPORARILY DISABLED - Testing if this is causing stats reset
         // Reset any stuck "testing" codes back to "pending" when page loads
-        await (supabase as any)
-          .from('codes')
-          .update({ status: 'pending' })
-          .eq('room_id', roomId)
-          .eq('status', 'testing')
+        // await (supabase as any)
+        //   .from('codes')
+        //   .update({ status: 'pending' })
+        //   .eq('room_id', roomId)
+        //   .eq('status', 'testing')
         
         // Load initial stats
         const statsResponse = await fetch(`/api/rooms/${roomId}/stats`)
