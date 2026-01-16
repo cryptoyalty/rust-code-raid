@@ -110,21 +110,35 @@ export default function RoomPage() {
     loadRoom()
   }, [roomId])
 
-  // Load initial stats
+  // Load initial stats and recent failed codes
   useEffect(() => {
-    const loadStats = async () => {
+    const loadInitialData = async () => {
       try {
-        const response = await fetch(`/api/rooms/${roomId}/stats`)
-        const data = await response.json()
-        if (data.stats) {
-          setStats(data.stats)
+        // Load stats
+        const statsResponse = await fetch(`/api/rooms/${roomId}/stats`)
+        const statsData = await statsResponse.json()
+        if (statsData.stats) {
+          setStats(statsData.stats)
+        }
+
+        // Load recent failed codes
+        const { data: failedCodes, error } = await supabase
+          .from('codes')
+          .select('code')
+          .eq('room_id', roomId)
+          .eq('status', 'failed')
+          .order('updated_at', { ascending: false })
+          .limit(10)
+
+        if (!error && failedCodes) {
+          setRecentFails(failedCodes.map(c => c.code))
         }
       } catch (err) {
-        console.error('Error loading stats:', err)
+        console.error('Error loading initial data:', err)
       }
     }
 
-    loadStats()
+    loadInitialData()
   }, [roomId])
 
   // Real-time subscription
@@ -176,8 +190,18 @@ export default function RoomPage() {
                 updated.testing_codes = prev.testing_codes + 1
                 updated.pending_codes = Math.max(0, prev.pending_codes - 1)
               } else if (code.status === 'pending') {
-                updated.pending_codes = prev.pending_codes + 1
-                updated.success_codes = Math.max(0, prev.success_codes - 1)
+                // Code was undone - check what it was before
+                const oldCode = payload.old as Code
+                if (oldCode.status === 'success') {
+                  updated.pending_codes = prev.pending_codes + 1
+                  updated.success_codes = Math.max(0, prev.success_codes - 1)
+                } else if (oldCode.status === 'failed') {
+                  updated.pending_codes = prev.pending_codes + 1
+                  updated.failed_codes = Math.max(0, prev.failed_codes - 1)
+                  
+                  // Remove from recent fails
+                  setRecentFails((prevFails) => prevFails.filter(c => c !== code.code))
+                }
               }
 
               return updated
@@ -769,7 +793,7 @@ export default function RoomPage() {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
-            className="fixed bottom-24 sm:bottom-32 left-1/2 md:left-[calc(50%+4rem)] lg:left-[calc(50%-5rem)] -translate-x-1/2 z-50"
+            className="fixed bottom-24 sm:bottom-32 left-1/2 md:left-[calc(50%+3rem)] lg:left-[calc(50%-8rem)] -translate-x-1/2 z-50"
           >
             <div className="bg-zinc-900/95 backdrop-blur-xl border border-vivid-rose/30 rounded-2xl px-6 py-4 shadow-2xl shadow-vivid-rose/20 flex items-center gap-4">
               <div className="flex items-center gap-3">
