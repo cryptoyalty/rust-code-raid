@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase/client'
+import type { Database } from '@/lib/supabase/types'
+
+type CodeUpdate = Database['public']['Tables']['codes']['Update']
 
 export async function PATCH(
   request: NextRequest,
@@ -17,12 +20,14 @@ export async function PATCH(
       )
     }
 
+    const updateData: CodeUpdate = { 
+      status: status as 'pending' | 'testing' | 'success' | 'failed',
+      updated_at: new Date().toISOString() 
+    }
+    
     const { data, error } = await supabase
       .from('codes')
-      .update({ 
-        status: status as string,
-        updated_at: new Date().toISOString() 
-      })
+      .update(updateData)
       .eq('id', codeId)
       .select()
       .single()
