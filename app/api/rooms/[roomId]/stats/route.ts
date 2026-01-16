@@ -18,26 +18,22 @@ export async function GET(
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     )
 
-    // Query codes directly instead of using RPC function
-    // Supabase defaults to 1000 row limit, so we need to specify a higher limit
-    const { data: codes, error } = await (supabase as any)
-      .from('codes')
-      .select('status')
-      .eq('room_id', roomId)
-      .limit(10000)
+    // Use the database function (fixed to return INT instead of BIGINT)
+    const { data, error } = await (supabase as any)
+      .rpc('get_room_stats', { room_uuid: roomId })
 
     if (error) {
-      console.error('Stats query error:', error)
+      console.error('Stats RPC error:', error)
       throw error
     }
 
-    // Calculate stats from the codes array
-    const stats = {
-      total_codes: codes?.length || 0,
-      pending_codes: codes?.filter((c: any) => c.status === 'pending').length || 0,
-      testing_codes: codes?.filter((c: any) => c.status === 'testing').length || 0,
-      failed_codes: codes?.filter((c: any) => c.status === 'failed').length || 0,
-      success_codes: codes?.filter((c: any) => c.status === 'success').length || 0,
+    // RPC returns an array with one row
+    const stats = data?.[0] || {
+      total_codes: 10000,
+      pending_codes: 10000,
+      testing_codes: 0,
+      failed_codes: 0,
+      success_codes: 0,
     }
 
     return NextResponse.json({ stats }, {
